@@ -7,6 +7,8 @@ import java.io.IOException;
 
 import com.google.gson.stream.JsonReader;
 
+import net.minecraft.client.MinecraftClient;
+
 public class LightingManager {
     private static final int MAX_LIGHT = 15;
     private static final int MIN_LIGHT = 0;
@@ -32,9 +34,10 @@ public class LightingManager {
         return isActive;
     }
 
+    @SuppressWarnings("resource")
     public static void setActive (boolean value) {
         isActive = value;
-        // TODO: Update lighting.
+        MinecraftClient.getInstance().worldRenderer.reload();
     }
 
     public static void toggleActive () {
