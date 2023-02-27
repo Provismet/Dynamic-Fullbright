@@ -4,13 +4,13 @@
   "version": "${version}",
 
   "name": "Dynamic Fullbright",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "description": "Allows light levels to be scaled to your preference.",
   "authors": [
     "Provismet"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://github.com/Provismet/Dynamic-Fullbright",
+    "sources": "https://github.com/Provismet/Dynamic-Fullbright"
   },
 
   "license": "MIT",
