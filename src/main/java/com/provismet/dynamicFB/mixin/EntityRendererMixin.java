@@ -15,7 +15,7 @@ public abstract class EntityRendererMixin {
     private void changeLighting (CallbackInfoReturnable<Integer> cir) {
         if (LightingManager.isActive()) {
             int out = cir.getReturnValue();
-            cir.setReturnValue(LightingManager.getLightingValue(true, out));
+            cir.setReturnValue(LightingManager.getLightingValue(LightingManager.LightType.ENTITY, out));
         }
     }
 }

@@ -18,6 +18,8 @@ public class LightingManager {
     private static final String SCALING = "scaling";
     private static final String MIN_BLOCK = "min block";
     private static final String MAX_BLOCK = "max block";
+    private static final String MIN_SKY = "min sky";
+    private static final String MAX_SKY = "max sky";
     private static final String MIN_ENTITY = "min entity";
     private static final String MAX_ENTITY = "max entity";
 
@@ -27,6 +29,10 @@ public class LightingManager {
     
     private static int minBlockLight = 4;
     private static int maxBlockLight = 15;
+
+    private static int minSkyLight = 4;
+    private static int maxSkyLight = 15;
+
     private static int minEntityLight = 4;
     private static int maxEntityLight = 15;
 
@@ -62,35 +68,79 @@ public class LightingManager {
         return maxBlockLight;
     }
 
+    public static void setMinimumSkyLight (int value) {
+        value = clamp(value, MIN_LIGHT, maxSkyLight);
+        minSkyLight = value;
+    }
+
+    public static int getMinimumSkyLight () {
+        return minSkyLight;
+    }
+
+    public static void setMaximumSkyLight (int value) {
+        value = clamp(value, minSkyLight, MAX_LIGHT);
+        maxSkyLight = value;
+    }
+
+    public static int getMaximumSkyLight () {
+        return maxSkyLight;
+    }
+
     public static void setMinimumEntityLight (int value) {
         value = clamp(value, MIN_LIGHT, maxEntityLight);
         minEntityLight = value;
     }
 
     public static int getMinimumEntityLight () {
-        return separateEntityLight ? minEntityLight : minBlockLight;
+        return getMinimumEntityLight(false);
     }
 
+    public static int getMinimumEntityLight (boolean trueValue) {
+        return separateEntityLight || trueValue ? minEntityLight : max(minSkyLight, minBlockLight);
+    }
     public static void setMaximumEntityLight (int value) {
         value = clamp(value, minEntityLight, MAX_LIGHT);
         maxEntityLight = value;
     }
 
     public static int getMaximumEntityLight () {
-        return separateEntityLight ? maxEntityLight : maxBlockLight;
+        return getMaximumEntityLight(false);
     }
 
-    public static int getLightingValue (boolean isEntity, int trueLightLevel) {
-        int min = isEntity ? getMinimumEntityLight() : getMinimumBlockLight();
-        int max = isEntity ? getMaximumEntityLight() : getMaximumBlockLight();
+    public static int getMaximumEntityLight (boolean trueValue) {
+        return separateEntityLight || trueValue ? maxEntityLight : max(maxSkyLight, maxBlockLight);
+    }
+
+    public static int getLightingValue (LightType lightType, int trueLightLevel) {
+        int min = 0;
+        int max = 0;
+        switch (lightType) {
+            case ENTITY:
+                min = getMinimumEntityLight();
+                max = getMaximumEntityLight();
+                break;
+            
+            case BLOCK:
+                min = getMinimumBlockLight();
+                max = getMaximumBlockLight();
+                break;
+            
+            case SKY:
+                min = getMinimumSkyLight();
+                max = getMaximumSkyLight();
+                break;
+        
+            default:
+                break;
+        }
 
         if (shouldScaleLighting) return scale(trueLightLevel, min, max);
         else return clamp(trueLightLevel, min, max);
     }
 
     public static void save () {
-        String json = String.format("{\n\t\"%s\": %b,\n\t\"%s\": %b,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d\n}",
-            ENTITY_LIGHT, separateEntityLight, SCALING, shouldScaleLighting, MIN_BLOCK, minBlockLight, MAX_BLOCK, maxBlockLight, MIN_ENTITY, minEntityLight, MAX_ENTITY, maxEntityLight);
+        String json = String.format("{\n\t\"%s\": %b,\n\t\"%s\": %b,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d\n}",
+            ENTITY_LIGHT, separateEntityLight, SCALING, shouldScaleLighting, MIN_BLOCK, minBlockLight, MAX_BLOCK, maxBlockLight, MIN_ENTITY, minEntityLight, MAX_ENTITY, maxEntityLight, MIN_SKY, minSkyLight, MAX_SKY, maxSkyLight);
         
         FileWriter writer;
         try {
@@ -135,6 +185,14 @@ public class LightingManager {
                     case MAX_ENTITY:
                         setMaximumEntityLight(parser.nextInt());
                         break;
+                    
+                    case MIN_SKY:
+                        setMinimumSkyLight(parser.nextInt());
+                        break;
+                    
+                    case MAX_SKY:
+                        setMaximumSkyLight(parser.nextInt());
+                        break;
                 
                     default:
                         ClientMain.LOGGER.warn("Illegal identifier '" + name + "' found in config.");
@@ -152,6 +210,12 @@ public class LightingManager {
         }
     }
 
+    public static enum LightType {
+        ENTITY,
+        BLOCK,
+        SKY
+    }
+
     private static int clamp (int value, int min, int max) {
         if (value > max) value = max;
         else if (value < min) value = min;
@@ -159,6 +223,10 @@ public class LightingManager {
     }
 
     private static int scale (int value, int min, int max) {
-        return (int)(((double)value / 15.0) * (double)((max - min))) + min;
+        return (int)(((double)value / (double)MAX_LIGHT) * (double)((max - min))) + min;
+    }
+
+    private static int max (int a, int b) {
+        return a > b ? a : b;
     }
 }

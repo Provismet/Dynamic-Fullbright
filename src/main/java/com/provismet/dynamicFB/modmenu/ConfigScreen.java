@@ -30,15 +30,27 @@ public class ConfigScreen {
             .build()
         );
         
-        world.addEntry(entryBuilder.startIntSlider(new TranslatableText("entry.dynamicfullbright.world.min"), LightingManager.getMinimumBlockLight(), 0, 15)
+        world.addEntry(entryBuilder.startIntSlider(new TranslatableText("entry.dynamicfullbright.world.block.min"), LightingManager.getMinimumBlockLight(), 0, 15)
             .setDefaultValue(4)
             .setSaveConsumer(newValue -> LightingManager.setMinimumBlockLight(newValue))
             .build()
         );
 
-        world.addEntry(entryBuilder.startIntSlider(new TranslatableText("entry.dynamicfullbright.world.max"), LightingManager.getMaximumBlockLight(), 0, 15)
+        world.addEntry(entryBuilder.startIntSlider(new TranslatableText("entry.dynamicfullbright.world.block.max"), LightingManager.getMaximumBlockLight(), 0, 15)
             .setDefaultValue(15)
             .setSaveConsumer(newValue -> LightingManager.setMaximumBlockLight(newValue))
+            .build()
+        );
+
+        world.addEntry(entryBuilder.startIntSlider(new TranslatableText("entry.dynamicfullbright.world.sky.min"), LightingManager.getMinimumSkyLight(), 0, 15)
+            .setDefaultValue(4)
+            .setSaveConsumer(newValue -> LightingManager.setMinimumSkyLight(newValue))
+            .build()
+        );
+
+        world.addEntry(entryBuilder.startIntSlider(new TranslatableText("entry.dynamicfullbright.world.sky.max"), LightingManager.getMaximumSkyLight(), 0, 15)
+            .setDefaultValue(15)
+            .setSaveConsumer(newValue -> LightingManager.setMaximumSkyLight(newValue))
             .build()
         );
 
@@ -50,13 +62,13 @@ public class ConfigScreen {
             .build()
         );
 
-        entities.addEntry(entryBuilder.startIntSlider(new TranslatableText("entry.dynamicfullbright.entity.min"), LightingManager.getMinimumEntityLight(), 0, 15)
+        entities.addEntry(entryBuilder.startIntSlider(new TranslatableText("entry.dynamicfullbright.entity.min"), LightingManager.getMinimumEntityLight(true), 0, 15)
             .setDefaultValue(4)
             .setSaveConsumer(newValue -> LightingManager.setMinimumEntityLight(newValue))
             .build()
         );
 
-        entities.addEntry(entryBuilder.startIntSlider(new TranslatableText("entry.dynamicfullbright.entity.max"), LightingManager.getMaximumEntityLight(), 0, 15)
+        entities.addEntry(entryBuilder.startIntSlider(new TranslatableText("entry.dynamicfullbright.entity.max"), LightingManager.getMaximumEntityLight(true), 0, 15)
             .setDefaultValue(15)
             .setSaveConsumer(newValue -> LightingManager.setMaximumEntityLight(newValue))
             .build()

@@ -9,8 +9,10 @@
 
     "entry.dynamicfullbright.world.active": "Enable Light Adjustment",
     "entry.dynamicfullbright.world.scaling": "Light Scaling",
-    "entry.dynamicfullbright.world.min": "Minimum Light Level",
-    "entry.dynamicfullbright.world.max": "Maximum Light Level",
+    "entry.dynamicfullbright.world.block.min": "Minimum Block Light Level",
+    "entry.dynamicfullbright.world.block.max": "Maximum Block Light Level",
+    "entry.dynamicfullbright.world.sky.min": "Minimum Sky Light Level",
+    "entry.dynamicfullbright.world.sky.max": "Maximum Sky Light Level",
     "entry.dynamicfullbright.entity.separate": "Separate Entity World Lighting",
     "entry.dynamicfullbright.entity.min": "Minimum Entity Light",
     "entry.dynamicfullbright.entity.max": "Maximum Entity Light",
