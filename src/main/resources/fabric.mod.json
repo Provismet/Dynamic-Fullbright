@@ -14,12 +14,15 @@
   },
 
   "license": "MIT",
-  "icon": "assets/modid/icon.png",
+  "icon": "assets/dynamicfullbright/icon.png",
 
   "environment": "client",
   "entrypoints": {
     "client": [
-      "com.provismet.dynamicFB.clientMain"
+      "com.provismet.dynamicFB.ClientMain"
+    ],
+    "modmenu": [
+      "com.provismet.dynamicFB.modmenu.ModMenuConfig"
     ]
   },
   "mixins": [
