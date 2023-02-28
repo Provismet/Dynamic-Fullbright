@@ -1,9 +1,10 @@
-# Fabric Example Mod
+# Dynamic Fullbright
+A more advanced version of traditional fullbright.
 
-## Setup
+## About
+Traditional fullbright mods apply a nightvision filter or set the light levels all to the maximum. Dynamic Fullbright instead offers the ability to clamp or scale light levels, retaining the lighting ambience of the area while still making things visible. You can set everything to the maximum to achieve true fullbright, or tone it down to suit your preference.
 
-For setup instructions please see the [fabric wiki page](https://fabricmc.net/wiki/tutorial:setup) that relates to the IDE that you are using.
-
-## License
-
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+## Dependencies
+Optional, but required to access the in-game settings menu:
+- Mod Menu
+- Cloth Config
