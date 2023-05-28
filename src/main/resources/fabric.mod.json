@@ -10,7 +10,8 @@
   ],
   "contact": {
     "homepage": "https://github.com/Provismet/Dynamic-Fullbright",
-    "sources": "https://github.com/Provismet/Dynamic-Fullbright"
+    "sources": "https://github.com/Provismet/Dynamic-Fullbright",
+    "issues": "https://github.com/Provismet/Dynamic-Fullbright/issues"
   },
 
   "license": "MIT",
