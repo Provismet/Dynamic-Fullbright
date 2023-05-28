@@ -177,6 +177,7 @@ public class LightingManager {
                     
                     case MAX_BLOCK:
                         setMaximumBlockLight(parser.nextInt());
+                        break;
 
                     case MIN_ENTITY:
                         setMinimumEntityLight(parser.nextInt());
@@ -203,10 +204,11 @@ public class LightingManager {
             parser.close();
         }
         catch (FileNotFoundException e) {
+            ClientMain.LOGGER.warn("No config file found, creating new file...");
             save();
         }
         catch (Exception e) {
-            // Do nothing.
+            ClientMain.LOGGER.error("Encountered error while parsing config:", e);
         }
     }
 
