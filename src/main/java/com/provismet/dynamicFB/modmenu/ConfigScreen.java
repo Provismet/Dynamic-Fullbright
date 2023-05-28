@@ -48,11 +48,15 @@ public class ConfigScreen {
             .build()
         );
 
+        /**
+         * Somewhere in the MC source code there is an override for skylight rendering and that makes it impossible to upper-bound for the moment.
+         * This block will remain commented out to avoid confusion for the end user.
         world.addEntry(entryBuilder.startIntSlider(new TranslatableText("entry.dynamicfullbright.world.sky.max"), LightingManager.getMaximumSkyLight(), 0, 15)
             .setDefaultValue(15)
             .setSaveConsumer(newValue -> LightingManager.setMaximumSkyLight(newValue))
             .build()
         );
+        */
 
         ConfigCategory entities = builder.getOrCreateCategory(new TranslatableText("category.dynamicfullbright.entity"));
         entities.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("entry.dynamicfullbright.entity.separate"), LightingManager.separateEntityLight)
