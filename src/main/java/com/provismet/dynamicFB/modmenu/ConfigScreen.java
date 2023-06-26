@@ -20,6 +20,14 @@ public class ConfigScreen {
         world.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.dynamicfullbright.world.active"), LightingManager.isActive())
             .setDefaultValue(false)
             .setSaveConsumer(newValue -> LightingManager.setActive(newValue))
+            .setTooltip(Text.translatable("tooltip.dynamicfullbright.world.active"))
+            .build()
+        );
+
+        world.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.dynamicfullbright.world.retain_active"), LightingManager.rememberActive)
+            .setDefaultValue(false)
+            .setSaveConsumer(newValue -> LightingManager.rememberActive = newValue)
+            .setTooltip(Text.translatable("tooltip.dynamicfullbright.world.retain_active"))
             .build()
         );
 

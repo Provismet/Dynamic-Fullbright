@@ -22,8 +22,11 @@ public class LightingManager {
     private static final String MAX_SKY = "max sky";
     private static final String MIN_ENTITY = "min entity";
     private static final String MAX_ENTITY = "max entity";
+    private static final String RETAIN_ON_STATE = "retain on-state";
+    private static final String ON_STATE = "on-state";
 
     private static boolean isActive = false;
+    public static boolean rememberActive = false;
     public static boolean separateEntityLight = false;
     public static boolean shouldScaleLighting = true;
     
@@ -139,8 +142,17 @@ public class LightingManager {
     }
 
     public static void save () {
-        String json = String.format("{\n\t\"%s\": %b,\n\t\"%s\": %b,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d\n}",
-            ENTITY_LIGHT, separateEntityLight, SCALING, shouldScaleLighting, MIN_BLOCK, minBlockLight, MAX_BLOCK, maxBlockLight, MIN_ENTITY, minEntityLight, MAX_ENTITY, maxEntityLight, MIN_SKY, minSkyLight, MAX_SKY, maxSkyLight);
+        String json = String.format("{\n\t\"%s\": %b,\n\t\"%s\": %b,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %b,\n\t\"%s\": %b\n}",
+            ENTITY_LIGHT, separateEntityLight,
+            SCALING, shouldScaleLighting,
+            MIN_BLOCK, minBlockLight,
+            MAX_BLOCK, maxBlockLight,
+            MIN_ENTITY, minEntityLight,
+            MAX_ENTITY, maxEntityLight,
+            MIN_SKY, minSkyLight,
+            MAX_SKY, maxSkyLight,
+            RETAIN_ON_STATE, rememberActive,
+            ON_STATE, isActive);
         
         FileWriter writer;
         try {
@@ -157,6 +169,8 @@ public class LightingManager {
         try {
             FileReader reader = new FileReader(FILENAME);
             JsonReader parser = new JsonReader(reader);
+
+            boolean setActiveState = false;
 
             parser.beginObject();
 
@@ -194,6 +208,14 @@ public class LightingManager {
                     case MAX_SKY:
                         setMaximumSkyLight(parser.nextInt());
                         break;
+
+                    case RETAIN_ON_STATE:
+                        rememberActive = parser.nextBoolean();
+                        break;
+                    
+                    case ON_STATE:
+                        setActiveState = parser.nextBoolean();
+                        break;
                 
                     default:
                         ClientMain.LOGGER.warn("Illegal identifier '" + name + "' found in config.");
@@ -202,6 +224,8 @@ public class LightingManager {
             }
 
             parser.close();
+
+            if (rememberActive) isActive = setActiveState;
         }
         catch (FileNotFoundException e) {
             ClientMain.LOGGER.warn("No config file found, creating new file...");
