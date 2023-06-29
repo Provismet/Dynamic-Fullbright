@@ -9,11 +9,11 @@ import com.provismet.dynamicFB.LightingManager;
 
 import net.minecraft.client.render.entity.EntityRenderer;
 
-@Mixin(EntityRenderer.class)
+@Mixin(value = EntityRenderer.class, priority = 999)
 public abstract class EntityRendererMixin {
     @Inject(at = @At("RETURN"), method = "getBlockLight", cancellable = true)
     private void changeLighting (CallbackInfoReturnable<Integer> cir) {
-        if (LightingManager.isActive()) {
+        if (LightingManager.isActive() && LightingManager.isEntityActive()) {
             int out = cir.getReturnValue();
             cir.setReturnValue(LightingManager.getLightingValue(LightingManager.LightType.ENTITY, out));
         }

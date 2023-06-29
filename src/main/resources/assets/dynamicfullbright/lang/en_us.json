@@ -19,7 +19,7 @@
     "entry.dynamicfullbright.entity.max": "Maximum Entity Light",
 
     "tooltip.dynamicfullbright.world.scaling": "When enabled, light levels will be scaled to be between the specified minimum and maximum range.\nWhen disabled, light levels outside the range will be clamped to it.",
-    "tooltip.dynamicfullbright.entity.separate": "When enabled, entity light levels will be adjusted independently of the world's light.\nThe entity light range is ignored when this is disabled.",
+    "tooltip.dynamicfullbright.entity.separate": "When enabled, entity light levels will be adjusted independently of the world's light.\nThe entity light range is ignored when this is disabled.\n\nTo disable entity light scaling entirely: enable this setting then set min entity light to 0 and max to 15.",
     "tooltip.dynamicfullbright.world.active": "Turns the mod on or off.\nA keybind may be set for this toggle in the controls menu.",
     "tooltip.dynamicfullbright.world.retain_active": "Determines whether or not the mod will remember its on/off state when Minecraft is loaded.",
 

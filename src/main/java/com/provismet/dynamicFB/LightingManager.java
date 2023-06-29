@@ -49,6 +49,14 @@ public class LightingManager {
         MinecraftClient.getInstance().worldRenderer.reload();
     }
 
+    public static boolean isEntityActive () {
+        return (!(minEntityLight == MIN_LIGHT && maxEntityLight == MAX_LIGHT) && separateEntityLight) || (!separateEntityLight && isBlockActive());
+    }
+
+    public static boolean isBlockActive  () {
+        return !(minBlockLight == MIN_LIGHT && minSkyLight == MIN_LIGHT && maxBlockLight == MAX_LIGHT && maxSkyLight == MAX_LIGHT);
+    }
+
     public static void toggleActive () {
         setActive(!isActive);
     }
