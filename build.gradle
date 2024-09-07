@@ -109,9 +109,9 @@ publishMods {
 			start = project.version_start
 			end = project.version_end
 		}
-		requires("306612") // Fabric API
-		optional("348521") // Cloth Config
-		optional("308702") // Mod Menu
+		requires("fabric-api")
+		optional("cloth-config")
+		optional("modmenu")
 	}
 }
 
