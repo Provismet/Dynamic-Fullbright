@@ -11,11 +11,21 @@ import net.minecraft.client.render.entity.EntityRenderer;
 
 @Mixin(value = EntityRenderer.class, priority = 999)
 public abstract class EntityRendererMixin {
-    @Inject(at = @At("RETURN"), method = "getBlockLight", cancellable = true)
+    @Inject(method="getBlockLight", at=@At("RETURN"), cancellable=true)
     private void changeLighting (CallbackInfoReturnable<Integer> cir) {
         if (LightingManager.isActive() && LightingManager.isEntityActive()) {
             int out = cir.getReturnValue();
-            cir.setReturnValue(LightingManager.getLightingValue(LightingManager.LightType.ENTITY, out));
+            if (LightingManager.separateEntityLight) cir.setReturnValue(LightingManager.getLightingValue(LightingManager.LightType.ENTITY, out));
+            else cir.setReturnValue(LightingManager.getLightingValue(LightingManager.LightType.BLOCK, out));
+        }
+    }
+
+    @Inject(method="getSkyLight", at=@At("RETURN"), cancellable=true)
+    private void adjustSkyLight (CallbackInfoReturnable<Integer> cir) {
+        if (LightingManager.isActive() && LightingManager.isEntityActive()) {
+            int out = cir.getReturnValue();
+            if (LightingManager.separateEntityLight) cir.setReturnValue(LightingManager.getLightingValue(LightingManager.LightType.ENTITY, out));
+            else cir.setReturnValue(LightingManager.getLightingValue(LightingManager.LightType.SKY, out));
         }
     }
 }

@@ -19,7 +19,7 @@ public class ConfigScreen {
 
         world.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.dynamicfullbright.world.active"), LightingManager.isActive())
             .setDefaultValue(false)
-            .setSaveConsumer(newValue -> LightingManager.setActive(newValue))
+            .setSaveConsumer(LightingManager::setActive)
             .setTooltip(Text.translatable("tooltip.dynamicfullbright.world.active"))
             .build()
         );
@@ -40,31 +40,35 @@ public class ConfigScreen {
         
         world.addEntry(entryBuilder.startIntSlider(Text.translatable("entry.dynamicfullbright.world.block.min"), LightingManager.getMinimumBlockLight(), 0, 15)
             .setDefaultValue(4)
-            .setSaveConsumer(newValue -> LightingManager.setMinimumBlockLight(newValue))
+            .setSaveConsumer(LightingManager::setMinimumBlockLight)
             .build()
         );
 
         world.addEntry(entryBuilder.startIntSlider(Text.translatable("entry.dynamicfullbright.world.block.max"), LightingManager.getMaximumBlockLight(), 0, 15)
             .setDefaultValue(15)
-            .setSaveConsumer(newValue -> LightingManager.setMaximumBlockLight(newValue))
+            .setSaveConsumer(LightingManager::setMaximumBlockLight)
             .build()
         );
 
         world.addEntry(entryBuilder.startIntSlider(Text.translatable("entry.dynamicfullbright.world.sky.min"), LightingManager.getMinimumSkyLight(), 0, 15)
             .setDefaultValue(4)
-            .setSaveConsumer(newValue -> LightingManager.setMinimumSkyLight(newValue))
+            .setSaveConsumer(LightingManager::setMinimumSkyLight)
             .build()
         );
 
-        /**
-         * Somewhere in the MC source code there is an override for skylight rendering and that makes it impossible to upper-bound for the moment.
-         * This block will remain commented out to avoid confusion for the end user.
         world.addEntry(entryBuilder.startIntSlider(Text.translatable("entry.dynamicfullbright.world.sky.max"), LightingManager.getMaximumSkyLight(), 0, 15)
             .setDefaultValue(15)
-            .setSaveConsumer(newValue -> LightingManager.setMaximumSkyLight(newValue))
+            .setSaveConsumer(LightingManager::setMaximumSkyLight)
+            .setTooltip(Text.translatable("tooltip.dynamicfullbright.world.sky"))
             .build()
         );
-        */
+
+        world.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.dynamicfullbright.world.sky_scale"), LightingManager.shouldScaleSkyBrightness)
+            .setDefaultValue(true)
+            .setSaveConsumer(newValue -> LightingManager.shouldScaleSkyBrightness = newValue)
+            .setTooltip(Text.translatable("tooltip.dynamicfullbright.world.sky_brightness"))
+            .build()
+        );
 
         ConfigCategory entities = builder.getOrCreateCategory(Text.translatable("category.dynamicfullbright.entity"));
         entities.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.dynamicfullbright.entity.separate"), LightingManager.separateEntityLight)
@@ -74,21 +78,19 @@ public class ConfigScreen {
             .build()
         );
 
-        entities.addEntry(entryBuilder.startIntSlider(Text.translatable("entry.dynamicfullbright.entity.min"), LightingManager.getMinimumEntityLight(true), 0, 15)
+        entities.addEntry(entryBuilder.startIntSlider(Text.translatable("entry.dynamicfullbright.entity.min"), LightingManager.getMinimumEntityLight(), 0, 15)
             .setDefaultValue(4)
-            .setSaveConsumer(newValue -> LightingManager.setMinimumEntityLight(newValue))
+            .setSaveConsumer(LightingManager::setMinimumEntityLight)
             .build()
         );
 
-        entities.addEntry(entryBuilder.startIntSlider(Text.translatable("entry.dynamicfullbright.entity.max"), LightingManager.getMaximumEntityLight(true), 0, 15)
+        entities.addEntry(entryBuilder.startIntSlider(Text.translatable("entry.dynamicfullbright.entity.max"), LightingManager.getMaximumEntityLight(), 0, 15)
             .setDefaultValue(15)
-            .setSaveConsumer(newValue -> LightingManager.setMaximumEntityLight(newValue))
+            .setSaveConsumer(LightingManager::setMaximumEntityLight)
             .build()
         );
 
-        builder.setSavingRunnable(() -> {
-            LightingManager.save();
-        });
+        builder.setSavingRunnable(LightingManager::save);
         return builder.build();
     }    
 }

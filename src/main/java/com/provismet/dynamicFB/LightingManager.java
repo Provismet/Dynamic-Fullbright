@@ -8,6 +8,7 @@ import java.io.IOException;
 import com.google.gson.stream.JsonReader;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.util.math.MathHelper;
 
 public class LightingManager {
     private static final int MAX_LIGHT = 15;
@@ -24,11 +25,13 @@ public class LightingManager {
     private static final String MAX_ENTITY = "max entity";
     private static final String RETAIN_ON_STATE = "retain on-state";
     private static final String ON_STATE = "on-state";
+    private static final String SCALE_SKY = "scale sky";
 
     private static boolean isActive = false;
     public static boolean rememberActive = false;
     public static boolean separateEntityLight = false;
     public static boolean shouldScaleLighting = true;
+    public static boolean shouldScaleSkyBrightness = true;
     
     private static int minBlockLight = 4;
     private static int maxBlockLight = 15;
@@ -43,7 +46,6 @@ public class LightingManager {
         return isActive;
     }
 
-    @SuppressWarnings("resource")
     public static void setActive (boolean value) {
         isActive = value;
         MinecraftClient.getInstance().worldRenderer.reload();
@@ -103,11 +105,7 @@ public class LightingManager {
     }
 
     public static int getMinimumEntityLight () {
-        return getMinimumEntityLight(false);
-    }
-
-    public static int getMinimumEntityLight (boolean trueValue) {
-        return separateEntityLight || trueValue ? minEntityLight : max(minSkyLight, minBlockLight);
+        return minEntityLight;
     }
     public static void setMaximumEntityLight (int value) {
         value = clamp(value, minEntityLight, MAX_LIGHT);
@@ -115,11 +113,7 @@ public class LightingManager {
     }
 
     public static int getMaximumEntityLight () {
-        return getMaximumEntityLight(false);
-    }
-
-    public static int getMaximumEntityLight (boolean trueValue) {
-        return separateEntityLight || trueValue ? maxEntityLight : max(maxSkyLight, maxBlockLight);
+        return maxEntityLight;
     }
 
     public static int getLightingValue (LightType lightType, int trueLightLevel) {
@@ -149,8 +143,15 @@ public class LightingManager {
         else return clamp(trueLightLevel, min, max);
     }
 
+    public static float modifySkyBrightness (float currentBrightness) {
+        if (!LightingManager.shouldScaleSkyBrightness) return currentBrightness;
+        int outOf15 = MathHelper.lerp(currentBrightness, 0, 15);
+        float modified = LightingManager.getLightingValue(LightType.SKY, outOf15);
+        return modified / 15f;
+    }
+
     public static void save () {
-        String json = String.format("{\n\t\"%s\": %b,\n\t\"%s\": %b,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %b,\n\t\"%s\": %b\n}",
+        String json = String.format("{\n\t\"%s\": %b,\n\t\"%s\": %b,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %b,\n\t\"%s\": %b,\n\t\"%s\": %b\n}",
             ENTITY_LIGHT, separateEntityLight,
             SCALING, shouldScaleLighting,
             MIN_BLOCK, minBlockLight,
@@ -160,7 +161,8 @@ public class LightingManager {
             MIN_SKY, minSkyLight,
             MAX_SKY, maxSkyLight,
             RETAIN_ON_STATE, rememberActive,
-            ON_STATE, isActive);
+            ON_STATE, isActive,
+            SCALE_SKY, shouldScaleSkyBrightness);
         
         FileWriter writer;
         try {
@@ -224,9 +226,13 @@ public class LightingManager {
                     case ON_STATE:
                         setActiveState = parser.nextBoolean();
                         break;
+
+                    case SCALE_SKY:
+                        shouldScaleSkyBrightness = parser.nextBoolean();
+                        break;
                 
                     default:
-                        ClientMain.LOGGER.warn("Illegal identifier '" + name + "' found in config.");
+                        ClientMain.LOGGER.warn("Illegal identifier '{}' found in config.", name);
                         break;
                 }
             }
@@ -244,7 +250,7 @@ public class LightingManager {
         }
     }
 
-    public static enum LightType {
+    public enum LightType {
         ENTITY,
         BLOCK,
         SKY
@@ -258,9 +264,5 @@ public class LightingManager {
 
     private static int scale (int value, int min, int max) {
         return (int)(((double)value / (double)MAX_LIGHT) * (double)((max - min))) + min;
-    }
-
-    private static int max (int a, int b) {
-        return a > b ? a : b;
     }
 }
