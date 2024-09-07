@@ -78,7 +78,7 @@ publishMods {
 	modLoaders.add("fabric")
 	modLoaders.add("quilt")
 	displayName = project.version.toString()
-	dryRun = changelog.toString().length() == 0 || providers.environmentVariable("GITHUB_TOKEN").getOrNull() == null || providers.environmentVariable("MODRINTH_TOKEN").getOrNull() == null || providers.environmentVariable("CURSEFORGE_TOKEN").getOrNull() == null
+	dryRun = providers.environmentVariable("GITHUB_TOKEN").getOrNull() == null || providers.environmentVariable("MODRINTH_TOKEN").getOrNull() == null || providers.environmentVariable("CURSEFORGE_TOKEN").getOrNull() == null
 
 	github {
 		repository = "Provismet/${project.github_repo}"
