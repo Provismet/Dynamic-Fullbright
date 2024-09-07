@@ -1,6 +1,7 @@
 plugins {
 	id 'fabric-loom' version '1.6-SNAPSHOT'
 	id 'maven-publish'
+	id "me.modmuss50.mod-publish-plugin" version "0.6.3"
 }
 
 version = project.mod_version + "+" + project.minecraft_version
@@ -34,12 +35,10 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_version}") {
-        exclude(group: "net.fabricmc.fabric-api")
-    }
-
-	modApi "com.terraformersmc:modmenu:${project.modmenu_version}"
-
+	modImplementation("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_version}") {
+		exclude(group: "net.fabricmc.fabric-api")
+	}
+	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 	modImplementation "maven.modrinth:sodium:${project.sodium_version}"
 }
 
@@ -68,6 +67,51 @@ java {
 jar {
 	from("LICENSE") {
 		rename { "${it}_${project.base.archivesName.get()}"}
+	}
+}
+
+publishMods {
+	file = remapJar.archiveFile
+	additionalFiles.from(remapSourcesJar.archiveFile)
+	changelog = file("changelog.md").text
+	type = STABLE
+	modLoaders.add("fabric")
+	modLoaders.add("quilt")
+	displayName = project.version.toString()
+	dryRun = true || changelog.length() == 0 || providers.environmentVariable("GITHUB_TOKEN").getOrNull() == null || providers.environmentVariable("MODRINTH_TOKEN").getOrNull() == null || providers.environmentVariable("CURSEFORGE_TOKEN").getOrNull() == null
+
+	github {
+		repository = "Provismet/${project.github_repo}"
+		accessToken = providers.environmentVariable("GITHUB_TOKEN")
+		commitish = "1.21"
+		tagName = "${project.mod_version}-mc${project.minecraft_version}"
+		allowEmptyFiles = true
+		displayName = "${project.mod_version} - ${project.minecraft_version}"
+	}
+
+	modrinth {
+		projectId = project.modrinth_id
+		accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+		minecraftVersionRange {
+			start = project.version_start
+			end = project.version_end
+		}
+		requires("fabric-api")
+		optional("cloth-config")
+		optional("modmenu")
+	}
+
+	curseforge {
+		projectId = project.curseforge_id
+		accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+		clientRequired = true
+		minecraftVersionRange {
+			start = project.version_start
+			end = project.version_end
+		}
+		requires("306612") // Fabric API
+		optional("348521") // Cloth Config
+		optional("308702") // Mod Menu
 	}
 }
 
