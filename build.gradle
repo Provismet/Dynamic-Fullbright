@@ -83,7 +83,7 @@ publishMods {
 	github {
 		repository = "Provismet/${project.github_repo}"
 		accessToken = providers.environmentVariable("GITHUB_TOKEN")
-		commitish = "1.21"
+		commitish = "${project.github_branch}"
 		tagName = "${project.mod_version}-mc${project.minecraft_version}"
 		allowEmptyFiles = true
 		displayName = "${project.mod_version} - ${project.minecraft_version}"
