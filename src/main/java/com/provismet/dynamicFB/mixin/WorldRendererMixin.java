@@ -1,5 +1,6 @@
 package com.provismet.dynamicFB.mixin;
 
+import net.minecraft.client.render.LightmapTextureManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -10,19 +11,13 @@ import net.minecraft.client.render.WorldRenderer;
 
 @Mixin(WorldRenderer.class)
 public abstract class WorldRendererMixin {
-    @ModifyVariable(at = @At("STORE"), method = "getLightmapCoordinates(Lnet/minecraft/world/BlockRenderView;Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/BlockPos;)I", ordinal = 2)
-    private static int adjustBlockLight (int blockLight) {
+    @ModifyVariable(method = "getLightmapCoordinates(Lnet/minecraft/client/render/WorldRenderer$BrightnessGetter;Lnet/minecraft/world/BlockRenderView;Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/BlockPos;)I", at = @At("STORE"), ordinal = 0)
+    private static int adjustBlockLight (int packedLight) {
         if (LightingManager.isActive()) {
-            return LightingManager.getLightingValue(LightingManager.LightType.BLOCK, blockLight);
+            int blockLight = LightingManager.getLightingValue(LightingManager.LightType.BLOCK, LightmapTextureManager.getBlockLightCoordinates(packedLight));
+            int skyLight = LightingManager.getLightingValue(LightingManager.LightType.SKY, LightmapTextureManager.getSkyLightCoordinates(packedLight));
+            return LightmapTextureManager.pack(blockLight, skyLight);
         }
-        return blockLight;
-    }
-
-    @ModifyVariable(at = @At("STORE"), method = "getLightmapCoordinates(Lnet/minecraft/world/BlockRenderView;Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/BlockPos;)I", ordinal = 1)
-    private static int adjustSkyLight (int skyLight) {
-        if (LightingManager.isActive()) {
-            return LightingManager.getLightingValue(LightingManager.LightType.SKY, skyLight);
-        }
-        return skyLight;
+        return packedLight;
     }
 }

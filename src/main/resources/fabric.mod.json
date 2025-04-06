@@ -27,9 +27,7 @@
     ]
   },
   "mixins": [
-    "dynamic-fullbright.mixins.json",
-    "sodium-compat.mixins.json",
-    "fabric-api-compat.mixins.json"
+    "dynamic-fullbright.mixins.json"
   ],
 
   "depends": {
