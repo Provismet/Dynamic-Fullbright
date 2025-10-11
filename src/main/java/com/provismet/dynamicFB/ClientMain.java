@@ -7,18 +7,21 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ClientMain implements ClientModInitializer {
+    public static final String MODID = "dynamicfullbright";
 	public static final Logger LOGGER = LoggerFactory.getLogger("Dynamic Fullbright");
+    public static final KeyBinding.Category KEYBIND_CATEGORY = KeyBinding.Category.create(Identifier.of(MODID, "keys"));
 
 	public static KeyBinding toggleLighting = KeyBindingHelper.registerKeyBinding(new KeyBinding(
         "key.dynamicfullbright.toggle",
         InputUtil.Type.KEYSYM,
         GLFW.GLFW_KEY_UNKNOWN,
-        "category.dynamicfullbright.keys"
+        KEYBIND_CATEGORY
     ));
 
 	public static boolean hasCloth () {

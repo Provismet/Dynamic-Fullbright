@@ -8,9 +8,7 @@ public class ModMenuConfig implements ModMenuApi {
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory () {
         if (ClientMain.hasCloth()) {
-            return parent -> {
-                return ConfigScreen.build(parent);
-            };
+            return ConfigScreen::build;
         }
         else {
             return parent -> null;

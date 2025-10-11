@@ -3,7 +3,7 @@
     
     "category.dynamicfullbright.world": "World Lighting",
     "category.dynamicfullbright.entity": "Entity Lighting",
-    "category.dynamicfullbright.keys": "Dynamic Fullbright",
+    "key.category.dynamicfullbright.keys": "Dynamic Fullbright",
 
     "key.dynamicfullbright.toggle": "Toggle Lighting Adjust",
 
