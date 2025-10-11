@@ -1,1 +1,1 @@
-Patch update that rearranges some internals to update the mod to the newer version of Minecraft.
+- Updated to 1.21.10 Minecraft.
