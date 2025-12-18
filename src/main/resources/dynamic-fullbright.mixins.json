@@ -8,7 +8,7 @@
   "client": [
     "WorldRendererMixin",
     "EntityRendererMixin",
-    "ClientWorldMixin"
+    "LightmapTextureManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
