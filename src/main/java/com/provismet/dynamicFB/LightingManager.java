@@ -1,31 +1,20 @@
 package com.provismet.dynamicFB;
 
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 
-import com.google.gson.stream.JsonReader;
-
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.math.MathHelper;
+import com.provismet.lilylib.util.json.JsonConfig;
+import com.provismet.lilylib.util.json.JsonReader;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.Mth;
 
 public class LightingManager {
+    private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve("dynamic-fullbright.json");
+
     private static final int MAX_LIGHT = 15;
     private static final int MIN_LIGHT = 0;
-    
-    private static final String FILENAME = "config/dynamic-fullbright.json";
-    private static final String ENTITY_LIGHT = "separate entity lighting";
-    private static final String SCALING = "scaling";
-    private static final String MIN_BLOCK = "min block";
-    private static final String MAX_BLOCK = "max block";
-    private static final String MIN_SKY = "min sky";
-    private static final String MAX_SKY = "max sky";
-    private static final String MIN_ENTITY = "min entity";
-    private static final String MAX_ENTITY = "max entity";
-    private static final String RETAIN_ON_STATE = "retain on-state";
-    private static final String ON_STATE = "on-state";
-    private static final String SCALE_SKY = "scale sky";
 
     private static boolean isActive = false;
     public static boolean rememberActive = false;
@@ -42,13 +31,26 @@ public class LightingManager {
     private static int minEntityLight = 4;
     private static int maxEntityLight = 15;
 
+    private static final JsonConfig SERIALISER = new JsonConfig()
+        .addBoolean("separate entity lighting", () -> separateEntityLight, val -> separateEntityLight = val)
+        .addBoolean("scaling", () -> shouldScaleLighting, val -> shouldScaleLighting = val)
+        .addInteger("min block", () -> minBlockLight, LightingManager::setMinimumBlockLight)
+        .addInteger("max block", () -> maxBlockLight, LightingManager::setMaximumBlockLight)
+        .addInteger("min entity", () -> minEntityLight, LightingManager::setMinimumEntityLight)
+        .addInteger("max entity", () -> maxEntityLight, LightingManager::setMaximumEntityLight)
+        .addInteger("min sky", () -> minSkyLight, LightingManager::setMinimumSkyLight)
+        .addInteger("max sky", () -> maxSkyLight, LightingManager::setMaximumSkyLight)
+        .addBoolean("retain on-state", () -> rememberActive, val -> rememberActive = val)
+        .addBoolean("on-state", () -> isActive, val -> isActive = rememberActive ? val : isActive)
+        .addBoolean("scale sky", () -> shouldScaleSkyBrightness, val -> shouldScaleSkyBrightness = val);
+
     public static boolean isActive () {
         return isActive;
     }
 
     public static void setActive (boolean value) {
         isActive = value;
-        MinecraftClient.getInstance().worldRenderer.reload();
+        Minecraft.getInstance().levelRenderer.allChanged();
     }
 
     public static boolean isEntityActive () {
@@ -145,104 +147,28 @@ public class LightingManager {
 
     public static float modifySkyBrightness (float currentBrightness) {
         if (!LightingManager.shouldScaleSkyBrightness) return currentBrightness;
-        int outOf15 = MathHelper.lerp(currentBrightness, 0, 15);
+        int outOf15 = Mth.lerpInt(currentBrightness, 0, 15);
         float modified = LightingManager.getLightingValue(LightType.SKY, outOf15);
         return modified / 15f;
     }
 
     public static void save () {
-        String json = String.format("{\n\t\"%s\": %b,\n\t\"%s\": %b,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %d,\n\t\"%s\": %b,\n\t\"%s\": %b,\n\t\"%s\": %b\n}",
-            ENTITY_LIGHT, separateEntityLight,
-            SCALING, shouldScaleLighting,
-            MIN_BLOCK, minBlockLight,
-            MAX_BLOCK, maxBlockLight,
-            MIN_ENTITY, minEntityLight,
-            MAX_ENTITY, maxEntityLight,
-            MIN_SKY, minSkyLight,
-            MAX_SKY, maxSkyLight,
-            RETAIN_ON_STATE, rememberActive,
-            ON_STATE, isActive,
-            SCALE_SKY, shouldScaleSkyBrightness);
-        
-        FileWriter writer;
         try {
-            writer = new FileWriter(FILENAME);
-            writer.write(json);
-            writer.close();
+            SERIALISER.saveToFile(FILE);
         }
         catch (IOException e) {
-            ClientMain.LOGGER.error("Failed to write JSON config: ", e);
+            ClientMain.LOGGER.error("Failed to write Dynamic Fullbright JSON config: ", e);
         }
     }
 
     public static void load () {
         try {
-            FileReader reader = new FileReader(FILENAME);
-            JsonReader parser = new JsonReader(reader);
-
-            boolean setActiveState = false;
-
-            parser.beginObject();
-
-            while (parser.hasNext()) {
-                String name = parser.nextName();
-                switch (name) {
-                    case ENTITY_LIGHT:
-                        separateEntityLight = parser.nextBoolean();
-                        break;
-                    
-                    case SCALING:
-                        shouldScaleLighting = parser.nextBoolean();
-                        break;
-                    
-                    case MIN_BLOCK:
-                        setMinimumBlockLight(parser.nextInt());
-                        break;
-                    
-                    case MAX_BLOCK:
-                        setMaximumBlockLight(parser.nextInt());
-                        break;
-
-                    case MIN_ENTITY:
-                        setMinimumEntityLight(parser.nextInt());
-                        break;
-                    
-                    case MAX_ENTITY:
-                        setMaximumEntityLight(parser.nextInt());
-                        break;
-                    
-                    case MIN_SKY:
-                        setMinimumSkyLight(parser.nextInt());
-                        break;
-                    
-                    case MAX_SKY:
-                        setMaximumSkyLight(parser.nextInt());
-                        break;
-
-                    case RETAIN_ON_STATE:
-                        rememberActive = parser.nextBoolean();
-                        break;
-                    
-                    case ON_STATE:
-                        setActiveState = parser.nextBoolean();
-                        break;
-
-                    case SCALE_SKY:
-                        shouldScaleSkyBrightness = parser.nextBoolean();
-                        break;
-                
-                    default:
-                        ClientMain.LOGGER.warn("Illegal identifier '{}' found in config.", name);
-                        break;
-                }
-            }
-
-            parser.close();
-
-            if (rememberActive) isActive = setActiveState;
+            JsonReader reader = JsonReader.file(FILE);
+            if (reader != null) SERIALISER.loadFromJson(reader);
+            else save();
         }
         catch (FileNotFoundException e) {
-            ClientMain.LOGGER.warn("No config file found, creating new file...");
+            ClientMain.LOGGER.warn("No Dynamic Fullbright config file found, creating new file...");
             save();
         }
         catch (Exception e) {
