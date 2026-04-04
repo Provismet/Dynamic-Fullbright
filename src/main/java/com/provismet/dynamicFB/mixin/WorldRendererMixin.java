@@ -1,23 +1,26 @@
 package com.provismet.dynamicFB.mixin;
 
-import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.world.level.BlockAndLightGetter;
+import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import com.provismet.dynamicFB.LightingManager;
+import net.minecraft.client.renderer.LevelRenderer;
 
-import net.minecraft.client.render.WorldRenderer;
-
-@Mixin(WorldRenderer.class)
+@Mixin(LevelRenderer.class)
 public abstract class WorldRendererMixin {
-    @ModifyVariable(method = "getLightmapCoordinates(Lnet/minecraft/client/render/WorldRenderer$BrightnessGetter;Lnet/minecraft/world/BlockRenderView;Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/BlockPos;)I", at = @At("STORE"), ordinal = 0)
-    private static int adjustBlockLight (int packedLight) {
+    @ModifyVariable(method = "getLightCoords(Lnet/minecraft/client/renderer/LevelRenderer$BrightnessGetter;Lnet/minecraft/world/level/BlockAndLightGetter;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;)I", at = @At("STORE"), name = "packedBrightness")
+    private static int adjustBlockLight (int packedBrightness, final LevelRenderer.BrightnessGetter brightnessGetter, final BlockAndLightGetter level, final BlockState state, final BlockPos pos) {
         if (LightingManager.isActive()) {
-            int blockLight = LightingManager.getLightingValue(LightingManager.LightType.BLOCK, LightmapTextureManager.getBlockLightCoordinates(packedLight));
-            int skyLight = LightingManager.getLightingValue(LightingManager.LightType.SKY, LightmapTextureManager.getSkyLightCoordinates(packedLight));
-            return LightmapTextureManager.pack(blockLight, skyLight);
+            int blockLight = LightingManager.getLightingValue(LightingManager.LightType.BLOCK, level.getBrightness(LightLayer.BLOCK, pos));
+            int skyLight = LightingManager.getLightingValue(LightingManager.LightType.SKY, level.getBrightness(LightLayer.SKY, pos));
+            return LightCoordsUtil.pack(blockLight, skyLight);
         }
-        return packedLight;
+        return packedBrightness;
     }
 }
