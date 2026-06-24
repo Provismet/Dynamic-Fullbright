@@ -1,1 +1,1 @@
-- Updated to 26.1 Minecraft.
+- Updated to 26.2 Minecraft.
