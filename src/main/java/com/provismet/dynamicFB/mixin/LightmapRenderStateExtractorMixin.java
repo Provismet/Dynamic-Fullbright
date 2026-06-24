@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LightmapRenderStateExtractor.class)
-public abstract class LightmapTextureManagerMixin {
+public abstract class LightmapRenderStateExtractorMixin {
     @Inject(method = "extract", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;endFlashState()Lnet/minecraft/client/renderer/EndFlashState;"))
     private void modifySky (LightmapRenderState renderState, float partialTicks, CallbackInfo info) {
         if (LightingManager.isActive()) renderState.skyFactor = LightingManager.modifySkyBrightness(renderState.skyFactor);
