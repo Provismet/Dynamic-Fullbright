@@ -50,7 +50,7 @@ public class LightingManager {
 
     public static void setActive (boolean value) {
         isActive = value;
-        Minecraft.getInstance().levelRenderer.allChanged();
+        Minecraft.getInstance().levelExtractor.allChanged();
     }
 
     public static boolean isEntityActive () {

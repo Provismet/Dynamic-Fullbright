@@ -10,12 +10,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import com.provismet.dynamicFB.LightingManager;
-import net.minecraft.client.renderer.LevelRenderer;
 
-@Mixin(LevelRenderer.class)
-public abstract class WorldRendererMixin {
-    @ModifyVariable(method = "getLightCoords(Lnet/minecraft/client/renderer/LevelRenderer$BrightnessGetter;Lnet/minecraft/world/level/BlockAndLightGetter;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;)I", at = @At("STORE"), name = "packedBrightness")
-    private static int adjustBlockLight (int packedBrightness, final LevelRenderer.BrightnessGetter brightnessGetter, final BlockAndLightGetter level, final BlockState state, final BlockPos pos) {
+@Mixin(LightCoordsUtil.class)
+public abstract class LightCoordsUtilMixin {
+    @ModifyVariable(method = "getLightCoords(Lnet/minecraft/util/LightCoordsUtil$BrightnessGetter;Lnet/minecraft/world/level/BlockAndLightGetter;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;)I", at = @At("STORE"), name = "packedBrightness")
+    private static int adjustBlockLight (int packedBrightness, final LightCoordsUtil.BrightnessGetter brightnessGetter, final BlockAndLightGetter level, final BlockState state, final BlockPos pos) {
         if (LightingManager.isActive()) {
             int blockLight = LightingManager.getLightingValue(LightingManager.LightType.BLOCK, level.getBrightness(LightLayer.BLOCK, pos));
             int skyLight = LightingManager.getLightingValue(LightingManager.LightType.SKY, level.getBrightness(LightLayer.SKY, pos));
